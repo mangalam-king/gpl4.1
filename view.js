@@ -32,6 +32,7 @@ window.search = async function () {
                 <p><b>DOB:</b> ${d.dob}</p>
                 <p><b>Age:</b> ${d.age}</p>
                 <p><b>Email:</b> ${d.email}</p>
+                <p><b>Work:</b> ${d.work}</p>
                 <p><b>Mobile:</b> ${d.mobile}</p>
                 <p><b>Address:</b> ${d.address1}, ${d.address2}, ${d.address3}</p>
                 <p><b>City:</b> ${d.city}</p>
