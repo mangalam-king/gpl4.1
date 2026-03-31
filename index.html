@@ -1,25 +1,60 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>GPL 4.1 Registration</title>
-<link rel="stylesheet" href="style.css">
+    <title>GPL 4.1 Registration</title>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
+
 <div class="container">
-<h2>GPL 4.1 Registration</h2>
-<form id="form">
-<input id="name" placeholder="Full Name" required>
-<input id="father" placeholder="Father Name" required>
-<input type="date" id="dob" required>
-<input id="age" placeholder="Age" readonly>
-<input type="email" id="email" placeholder="Email" required>
-<input id="mobile" placeholder="Mobile" required>
-<input id="addr1" placeholder="Address Line 1" required>
-<input id="addr2" placeholder="Address Line 2">
-<input id="addr3" placeholder="Address Line 3">
-<button type="submit">Submit</button>
-</form>
+    <div class="header">GPL 4.1 Registration Form</div>
+
+    <div class="form-box">
+        <form id="form">
+
+            <label>Full Name</label>
+            <input type="text" id="name" required>
+
+            <label>Father Name</label>
+            <input type="text" id="father" required>
+
+            <div class="row">
+                <div>
+                    <label>Date of Birth</label>
+                    <input type="date" id="dob" required>
+                </div>
+                <div>
+                    <label>Age</label>
+                    <input type="number" id="age" readonly>
+                </div>
+            </div>
+
+            <label>Email</label>
+            <input type="email" id="email" required>
+
+            <label>Mobile Number</label>
+            <input type="text" id="mobile" required>
+
+            <label>Address Line 1</label>
+            <input type="text" id="addr1" required>
+
+            <label>Address Line 2</label>
+            <input type="text" id="addr2">
+
+            <label>Address Line 3</label>
+            <input type="text" id="addr3">
+
+            <label>City</label>
+            <select id="city">
+                <option selected>Bindki</option>
+            </select>
+
+            <button type="submit">Submit</button>
+
+        </form>
+    </div>
 </div>
+
 <script type="module" src="script.js"></script>
 </body>
 </html>
