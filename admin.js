@@ -1,21 +1,30 @@
-import { db } from './firebase.js';
-import { collection,getDocs,updateDoc,doc }
-from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Admin Panel</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
 
-const pass="gpladmin123";
+<div class="container">
+    <div class="header">GPL Admin Panel</div>
 
-window.login=async()=>{
-if(document.getElementById("pass").value!==pass){alert("wrong");return;}
-let data=await getDocs(collection(db,"registrations"));
-data.forEach(d=>{
-let div=document.createElement("div");
-div.innerHTML=d.data().name+" "+d.data().regId+
-"<button onclick=\"approve('"+d.id+"')\">Approve</button>";
-document.body.appendChild(div);
-});
-};
+    <div class="form-box">
+        <input type="password" id="pass" placeholder="Enter Password">
+        <button onclick="login()">Login</button>
 
-window.approve=async(id)=>{
-await updateDoc(doc(db,"registrations",id),{status:"approved"});
-alert("approved");
-};
+        <div id="dashboard" style="display:none;">
+            <h3>Total Registrations: <span id="total"></span></h3>
+            <h3>Approved: <span id="approved"></span></h3>
+            <h3>Pending: <span id="pending"></span></h3>
+
+            <hr>
+
+            <div id="list"></div>
+        </div>
+    </div>
+</div>
+
+<script type="module" src="admin.js"></script>
+</body>
+</html>
