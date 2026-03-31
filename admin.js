@@ -1,30 +1,58 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Admin Panel</title>
-    <link rel="stylesheet" href="style.css">
-</head>
-<body>
+import { db } from './firebase.js';
+import { collection, getDocs, updateDoc, doc } 
+from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-<div class="container">
-    <div class="header">GPL Admin Panel</div>
+const PASS = "gpladmin123";
 
-    <div class="form-box">
-        <input type="password" id="pass" placeholder="Enter Password">
-        <button onclick="login()">Login</button>
+window.login = async function () {
 
-        <div id="dashboard" style="display:none;">
-            <h3>Total Registrations: <span id="total"></span></h3>
-            <h3>Approved: <span id="approved"></span></h3>
-            <h3>Pending: <span id="pending"></span></h3>
+    if (document.getElementById("pass").value !== PASS) {
+        alert("Wrong password");
+        return;
+    }
 
-            <hr>
+    document.getElementById("dashboard").style.display = "block";
 
-            <div id="list"></div>
-        </div>
-    </div>
-</div>
+    let list = document.getElementById("list");
+    list.innerHTML = "";
 
-<script type="module" src="admin.js"></script>
-</body>
-</html>
+    let total = 0, approved = 0, pending = 0;
+
+    let snap = await getDocs(collection(db, "registrations"));
+
+    snap.forEach(docSnap => {
+        let d = docSnap.data();
+        total++;
+
+        if (d.status === "approved") approved++;
+        else pending++;
+
+        let div = document.createElement("div");
+        div.style.border = "1px solid black";
+        div.style.margin = "10px";
+        div.style.padding = "10px";
+
+        div.innerHTML = `
+            <b>${d.regId}</b> - ${d.name}<br>
+            Father: ${d.father}<br>
+            Mobile: ${d.mobile}<br>
+            Status: ${d.status}<br>
+            <button onclick="approve('${docSnap.id}')">Approve</button>
+        `;
+
+        list.appendChild(div);
+    });
+
+    document.getElementById("total").innerText = total;
+    document.getElementById("approved").innerText = approved;
+    document.getElementById("pending").innerText = pending;
+};
+
+window.approve = async function (id) {
+    await updateDoc(doc(db, "registrations", id), {
+        status: "approved"
+    });
+
+    alert("Approved");
+    location.reload();
+};
