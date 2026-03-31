@@ -67,6 +67,7 @@ document.getElementById("form").addEventListener("submit", async (e) => {
             address2: document.getElementById("addr2").value,
             address3: document.getElementById("addr3").value,
             city: document.getElementById("city").value,
+            work: document.getElementById("work").value,
             status: "pending"
         });
 
