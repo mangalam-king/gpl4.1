@@ -59,3 +59,40 @@ button {
 button:hover {
     background: #004d00;
 }
+
+/* Button Styles */
+.btn {
+    padding: 8px 12px;
+    margin: 5px 3px;
+    border: none;
+    cursor: pointer;
+    font-weight: bold;
+    border-radius: 4px;
+}
+
+.btn-approve {
+    background-color: #28a745;
+    color: white;
+}
+
+.btn-approve:hover {
+    background-color: #218838;
+}
+
+.btn-reject {
+    background-color: #dc3545;
+    color: white;
+}
+
+.btn-reject:hover {
+    background-color: #c82333;
+}
+
+.btn-delete {
+    background-color: #343a40;
+    color: white;
+}
+
+.btn-delete:hover {
+    background-color: #23272b;
+}
