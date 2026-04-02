@@ -48,6 +48,7 @@ async function loadData() {
             <b>${d.regId}</b> - ${d.name}<br>
             Father: ${d.father}<br>
             Mobile: ${d.mobile}<br>
+            Work: ${d.work}<br>
             Status: <b>${d.status}</b><br><br>
 
             <button class="btn btn-approve" onclick="approve('${docSnap.id}')">Approve</button>
