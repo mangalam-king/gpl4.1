@@ -5,14 +5,23 @@ import {
 
 const PASS = "gpladmin123";
 
+// 🔐 Login
 window.login = async function () {
 
-    if (document.getElementById("pass").value !== PASS) {
+    let inputPass = document.getElementById("pass").value;
+
+    if (inputPass !== PASS) {
         alert("Wrong password");
         return;
     }
 
     document.getElementById("dashboard").style.display = "block";
+
+    loadData();
+};
+
+// 📊 Load All Data
+async function loadData() {
 
     let list = document.getElementById("list");
     list.innerHTML = "";
@@ -21,7 +30,7 @@ window.login = async function () {
 
     let snap = await getDocs(collection(db, "registrations"));
 
-    snap.forEach(docSnap => {
+    snap.forEach((docSnap) => {
         let d = docSnap.data();
         total++;
 
@@ -30,7 +39,7 @@ window.login = async function () {
         else pending++;
 
         let div = document.createElement("div");
-        div.style.border = "1px solid #333";
+        div.style.border = "1px solid #ccc";
         div.style.margin = "10px";
         div.style.padding = "10px";
         div.style.background = "#f9f9f9";
@@ -41,27 +50,28 @@ window.login = async function () {
             Mobile: ${d.mobile}<br>
             Status: <b>${d.status}</b><br><br>
 
-            <button onclick="approve('${docSnap.id}')">Approve</button>
-            <button onclick="reject('${docSnap.id}')">Reject</button>
-            <button onclick="deleteData('${docSnap.id}')">Delete</button>
+            <button class="btn btn-approve" onclick="approve('${docSnap.id}')">Approve</button>
+            <button class="btn btn-reject" onclick="reject('${docSnap.id}')">Reject</button>
+            <button class="btn btn-delete" onclick="deleteData('${docSnap.id}')">Delete</button>
         `;
 
         list.appendChild(div);
     });
 
+    // Update Stats
     document.getElementById("total").innerText = total;
     document.getElementById("approved").innerText = approved;
     document.getElementById("pending").innerText = pending;
     document.getElementById("rejected").innerText = rejected;
-};
+}
 
 // ✅ Approve
 window.approve = async function (id) {
     await updateDoc(doc(db, "registrations", id), {
         status: "approved"
     });
-    alert("Approved");
-    location.reload();
+    alert("✅ Approved");
+    loadData();
 };
 
 // ❌ Reject
@@ -69,8 +79,8 @@ window.reject = async function (id) {
     await updateDoc(doc(db, "registrations", id), {
         status: "rejected"
     });
-    alert("Rejected");
-    location.reload();
+    alert("❌ Rejected");
+    loadData();
 };
 
 // 🗑️ Delete
@@ -79,6 +89,6 @@ window.deleteData = async function (id) {
     if (!confirmDelete) return;
 
     await deleteDoc(doc(db, "registrations", id));
-    alert("Deleted successfully");
-    location.reload();
+    alert("🗑️ Deleted");
+    loadData();
 };
