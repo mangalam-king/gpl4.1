@@ -37,22 +37,26 @@ document.getElementById("form").addEventListener("submit", async (e) => {
             alert("❌ Already registered with this mobile");
             return;
         }
+// Counter logic (CORRECT)
+const counterRef = doc(db, "counters", "gpl");
+const counterSnap = await getDoc(counterRef);
 
-        // Counter logic (SAFE)
-        const counterRef = doc(db, "counters", "gpl");
-        const counterSnap = await getDoc(counterRef);
+let newId = 1;
 
-        let id = 0;
+if (!counterSnap.exists()) {
+    // First entry
+    await setDoc(counterRef, { current: 1 });
+} else {
+    let current = Number(counterSnap.data().current); // 🔥 force number
+    newId = current + 1;
 
-        if (!counterSnap.exists()) {
-            id = 1;
-            await setDoc(counterRef, { current: id });
-        } else {
-            id = counterSnap.data().current + 1;
-            await updateDoc(counterRef, { current: id });
-        }
+    await updateDoc(counterRef, {
+        current: newId
+    });
+}
 
-        let regId = "GPL" + String(id).padStart(3, '0');
+// Format ID properly
+let regId = "GPL" + String(newId).padStart(3, '0');
 
         // Save data
         await addDoc(collection(db, "registrations"), {
