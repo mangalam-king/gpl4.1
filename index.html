@@ -358,9 +358,52 @@
   <!-- Firebase Scripts -->
   <script type="module" src="firebase.js"></script>
   <script src="script.js"></script>
+<!-- Replace bottom section script in index.html -->
+<section id="latest-updates" style="max-width:900px;margin:30px auto;padding:20px;background:#fff;border-radius:12px;box-shadow: 0 4px 12px rgba(0,0,0,0.1);">
+  <h2 style="color: var(--stadium-dark);"><i class="fa-solid fa-bullhorn"></i> Latest Updates</h2>
+  <div id="updates-list">Loading updates...</div>
+</section>
 
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.17.1/firebase-app.js";
+  import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/12.17.1/firebase-firestore.js";
 
-<section id="latest-updates" style="max-width:900px;margin:30px auto;padding:20px;background:#fff;border-radius:12px"><h2>📢 Latest Updates</h2><div id="updates-list">No updates yet.</div></section>
-<script>const u=JSON.parse(localStorage.getItem('gplUpdates')||'[]');const c=document.getElementById('updates-list');if(u.length)c.innerHTML=u.map(x=>`<div style='border-bottom:1px solid #ddd;padding:8px 0'><b>${x.title}</b><br>${x.msg}</div>`).join('');</script></body>
+  const firebaseConfig = {
+    apiKey: "AIzaSyAQNpTgcKqYleL61DopRwz5LchN02jWQXI",
+    authDomain: "update-7ac29.firebaseapp.com",
+    projectId: "update-7ac29",
+    storageBucket: "update-7ac29.firebasestorage.app",
+    messagingSenderId: "806100858706",
+    appId: "1:806100858706:web:b74e017b95ce223009ec8b"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const db = getFirestore(app);
+
+  async function fetchUpdates() {
+    const listEl = document.getElementById('updates-list');
+    try {
+      const snap = await getDocs(collection(db, "updates"));
+      if (snap.empty) {
+        listEl.innerHTML = "<p style='color:#666;'>No updates yet.</p>";
+        return;
+      }
+      let html = "";
+      snap.forEach(doc => {
+        const x = doc.data();
+        html += `<div style='border-bottom:1px solid #ddd;padding:10px 0;'>
+                  <b style='color: var(--grass-green); font-size:1.1rem;'>${x.title}</b>
+                  <p style='margin-top:4px;'>${x.msg}</p>
+                 </div>`;
+      });
+      listEl.innerHTML = html;
+    } catch(e) {
+      listEl.innerHTML = "<p>Failed to load updates.</p>";
+    }
+  }
+
+  fetchUpdates();
+</script>
+</body>
 </html>
 
