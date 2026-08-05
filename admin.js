@@ -1,5 +1,5 @@
 import { db } from './firebase.js'; 
-import { collection, getDocs, updateDoc, doc, deleteDoc, addDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+import { collection, getDocs, updateDoc, doc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.17.1/firebase-app.js";
 import { getFirestore, collection as getCol, addDoc as addDoc2, getDocs as getDocs2, doc as doc2, updateDoc as updateDoc2, deleteDoc as deleteDoc2 } from "https://www.gstatic.com/firebasejs/12.17.1/firebase-firestore.js";
 
@@ -17,6 +17,7 @@ const updateDb = getFirestore(updateApp);
 
 const PASS = "gpladmin123"; 
 
+// Admin Login
 window.login = async function () {
     let inputPass = document.getElementById("pass").value;
     if (inputPass !== PASS) {
@@ -24,13 +25,83 @@ window.login = async function () {
         return;
     }
     document.getElementById("dashboard").style.display = "block";
-    loadData();
-    loadUpdates();
+    await loadData();
+    await loadUpdates();
 };
 
-// Load Updates
+// Load All Registration Data
+async function loadData() {
+    let list = document.getElementById("list");
+    list.innerHTML = "Loading registrations...";
+    let total = 0, approved = 0, pending = 0, rejected = 0;
+    try {
+        let snap = await getDocs(collection(db, "registrations"));
+        list.innerHTML = "";
+        snap.forEach((docSnap) => {
+            let d = docSnap.data();
+            total++;
+            if (d.status === "approved") approved++;
+            else if (d.status === "rejected") rejected++;
+            else pending++;
+            
+            let div = document.createElement("div");
+            div.style.cssText = "border: 1px solid #ccc; margin: 10px; padding: 10px; background: #f9f9f9;";
+            div.innerHTML = `
+                <b>${d.regId}</b> - ${d.name}<br>
+                Father: ${d.father}<br>
+                Mobile: ${d.mobile}<br>
+                Work: ${d.work}<br>
+                Status: <b>${d.status}</b><br><br>
+                <button class="btn btn-approve" onclick="approve('${docSnap.id}')">Approve</button>
+                <button class="btn btn-reject" onclick="reject('${docSnap.id}')">Reject</button>
+                <button class="btn btn-delete" onclick="deleteData('${docSnap.id}')">Delete</button>
+            `;
+            list.appendChild(div);
+        });
+
+        // Update Stats
+        document.getElementById("total").innerText = total;
+        document.getElementById("approved").innerText = approved;
+        document.getElementById("pending").innerText = pending;
+        document.getElementById("rejected").innerText = rejected;
+    } catch (err) {
+        console.error(err);
+        list.innerHTML = "Error loading registrations.";
+    }
+}
+
+// Approve Registration
+window.approve = async function (id) {
+    await updateDoc(doc(db, "registrations", id), {
+        status: "approved"
+    });
+    alert("Approved");
+    loadData();
+};
+
+// Reject Registration
+window.reject = async function (id) {
+    await updateDoc(doc(db, "registrations", id), {
+        status: "rejected"
+    });
+    alert("Rejected");
+    loadData();
+};
+
+// Delete Registration
+window.deleteData = async function (id) {
+    let confirmDelete = confirm("Are you sure you want to delete?");
+    if (!confirmDelete) return;
+    await deleteDoc(doc(db, "registrations", id));
+    alert("Deleted");
+    loadData();
+};
+
+// --- Home Page Updates Management ---
+
 async function loadUpdates() {
     let list = document.getElementById("updates-admin-list");
+    if (!list) return;
     list.innerHTML = "Loading updates...";
     try {
         let snap = await getDocs2(getCol(updateDb, "updates"));
@@ -51,6 +122,7 @@ async function loadUpdates() {
             list.appendChild(div);
         });
     } catch(e) {
+        console.error(e);
         list.innerHTML = "Error loading updates.";
     }
 }
