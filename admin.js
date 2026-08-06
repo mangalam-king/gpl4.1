@@ -51,7 +51,19 @@ async function loadData() {
                 Father: ${d.father}<br>
                 Mobile: ${d.mobile}<br>
                 Work: ${d.work}<br>
-                Status: <b>${d.status}</b><br><br>
+                Status: <b>${d.status}</b> | Team: <b style="color:#0056b3;">${d.team || "Unassigned"}</b><br><br>
+                
+                <label style="font-size:0.85rem; display:inline;">Assign Team: </label>
+                <select id="team-select-${docSnap.id}" style="width: auto; padding: 4px; display: inline-block;">
+                    <option value="">-- Select Team --</option>
+                    <option value="Team A" ${d.team === 'Team A' ? 'selected' : ''}>Team A</option>
+                    <option value="Team B" ${d.team === 'Team B' ? 'selected' : ''}>Team B</option>
+                    <option value="Team C" ${d.team === 'Team C' ? 'selected' : ''}>Team C</option>
+                    <option value="Team D" ${d.team === 'Team D' ? 'selected' : ''}>Team D</option>
+                </select>
+                <button class="btn" style="background:#003366; color:white; padding:5px 10px;" onclick="assignTeam('${docSnap.id}')">Save Team</button>
+                <br><br>
+
                 <button class="btn btn-approve" onclick="approve('${docSnap.id}')">Approve</button>
                 <button class="btn btn-reject" onclick="reject('${docSnap.id}')">Reject</button>
                 <button class="btn btn-delete" onclick="deleteData('${docSnap.id}')">Delete</button>
@@ -95,6 +107,28 @@ window.deleteData = async function (id) {
     await deleteDoc(doc(db, "registrations", id));
     alert("Deleted");
     loadData();
+};
+
+// Assign Team Function
+window.assignTeam = async function (id) {
+    let teamSelect = document.getElementById(`team-select-${id}`);
+    let selectedTeam = teamSelect.value;
+    
+    if (!selectedTeam) {
+        alert("Please select a valid team first.");
+        return;
+    }
+
+    try {
+        await updateDoc(doc(db, "registrations", id), {
+            team: selectedTeam
+        });
+        alert(`Assigned to ${selectedTeam} successfully!`);
+        loadData();
+    } catch (err) {
+        console.error(err);
+        alert("Failed to update team: " + err.message);
+    }
 };
 
 // --- Home Page Updates Management ---
