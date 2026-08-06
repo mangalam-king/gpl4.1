@@ -5,38 +5,35 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-
 <div class="container">
     <div class="header">GPL Admin Panel</div>
-
     <div class="form-box">
         <input type="password" id="pass" placeholder="Enter Password">
         <button onclick="login()">Login</button>
-
         <div id="dashboard" style="display:none;">
             <h3>Total: <span id="total"></span></h3>
-<h3>Approved: <span id="approved"></span></h3>
-<h3>Pending: <span id="pending"></span></h3>
-<h3>Rejected: <span id="rejected"></span></h3>
-            <!-- Insert this inside <div id="dashboard" style="display:none;"> before <hr> -->
-<div style="margin-top: 20px; padding: 15px; border: 1px solid #003366; background: #f0f4f8; border-radius: 5px;">
-    <h3>Manage Home Page Updates</h3>
-    <input type="hidden" id="update-id">
-    <label>Title</label>
-    <input type="text" id="update-title" placeholder="Update Title" style="margin-bottom: 8px;">
-    <label>Message / Notification</label>
-    <textarea id="update-msg" placeholder="Update Content..." style="width: 100%; height: 60px; padding: 8px; border-radius: 3px; border: 1px solid #999;"></textarea>
-    <button onclick="saveUpdate()" id="update-btn" style="background: #003366; color: white;">Add Update</button>
-    <button onclick="resetUpdateForm()" id="cancel-btn" style="background: #6c757d; color: white; display: none;">Cancel</button>
-    <div id="updates-admin-list" style="margin-top: 15px;"></div>
-</div>
-            <hr>
+            <h3>Approved: <span id="approved"></span></h3>
+            <h3>Pending: <span id="pending"></span></h3>
+            <h3>Rejected: <span id="rejected"></span></h3>
+            
+            <!-- Home Page Updates Control Panel -->
+            <div style="margin-top: 20px; padding: 15px; border: 1px solid #003366; background: #f0f4f8; border-radius: 5px;">
+                <h3>Manage Home Page Updates</h3>
+                <input type="hidden" id="update-id">
+                <label>Title</label>
+                <input type="text" id="update-title" placeholder="Update Title" style="margin-bottom: 8px;">
+                <label>Message / Notification</label>
+                <textarea id="update-msg" placeholder="Update Content..." style="width: 100%; height: 60px; padding: 8px; border-radius: 3px; border: 1px solid #999;"></textarea>
+                <button onclick="saveUpdate()" id="update-btn" style="background: #003366; color: white;">Add Update</button>
+                <button onclick="resetUpdateForm()" id="cancel-btn" style="background: #6c757d; color: white; display: none;">Cancel</button>
+                <div id="updates-admin-list" style="margin-top: 15px;"></div>
+            </div>
 
+            <hr style="margin: 20px 0;">
             <div id="list"></div>
         </div>
     </div>
 </div>
-
 <script type="module" src="admin.js"></script>
 </body>
 </html>
