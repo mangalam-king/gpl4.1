@@ -41,3 +41,34 @@ window.search = async function () {
         result.innerHTML = "No record found";
     }
 };
+// Variable to keep track of the currently viewed user
+let activeUser = null;
+
+function loadUserProfile(userId) {
+  // Fetch user record from Firebase
+  firebase.database().ref('users/' + userId).once('value')
+    .then((snapshot) => {
+      if (snapshot.exists()) {
+        activeUser = snapshot.val();
+
+        // Populate the card structure with specific user details
+        document.getElementById('idCard').innerHTML = `
+          <div style="text-align: center;">
+            <h3>Identity Card</h3>
+            <p><strong>Name:</strong> ${activeUser.name}</p>
+            <p><strong>ID:</strong> ${userId}</p>
+            <p><strong>Phone:</strong> ${activeUser.phone}</p>
+            <p><strong>Email:</strong> ${activeUser.email || 'N/A'}</p>
+          </div>
+        `;
+
+        // Make the card and download button visible
+        document.getElementById('idCardWrapper').style.display = 'block';
+      } else {
+        alert("User record not found.");
+      }
+    })
+    .catch((error) => {
+      console.error("Error loading user profile:", error);
+    });
+}
