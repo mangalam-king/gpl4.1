@@ -16,6 +16,57 @@
             <h3>Pending: <span id="pending"></span></h3>
             <h3>Rejected: <span id="rejected"></span></h3>
             
+            <!-- Match Schedule & Results Control Panel -->
+            <div style="margin-top: 20px; padding: 15px; border: 1px solid #1b5e20; background: #e8f5e9; border-radius: 5px;">
+                <h3><i class="fa-solid fa-cricket-bat-ball"></i> Manage Match Schedule & Results</h3>
+                <input type="hidden" id="match-id">
+                
+                <div style="display: flex; gap: 10px; margin-bottom: 8px;">
+                    <div style="flex:1;">
+                        <label>Team 1 Name</label>
+                        <input type="text" id="match-team1" placeholder="e.g., Team A">
+                    </div>
+                    <div style="flex:1;">
+                        <label>Team 2 Name</label>
+                        <input type="text" id="match-team2" placeholder="e.g., Team B">
+                    </div>
+                </div>
+
+                <div style="display: flex; gap: 10px; margin-bottom: 8px;">
+                    <div style="flex:1;">
+                        <label>Team 1 Score</label>
+                        <input type="text" id="match-score1" placeholder="e.g., 142/5 (20)">
+                    </div>
+                    <div style="flex:1;">
+                        <label>Team 2 Score</label>
+                        <input type="text" id="match-score2" placeholder="e.g., 138/9 (20)">
+                    </div>
+                </div>
+
+                <div style="display: flex; gap: 10px; margin-bottom: 8px;">
+                    <div style="flex:1;">
+                        <label>Match Date & Time</label>
+                        <input type="text" id="match-time" placeholder="e.g., 10 Aug, 4:00 PM">
+                    </div>
+                    <div style="flex:1;">
+                        <label>Match Status</label>
+                        <select id="match-status">
+                            <option value="Upcoming">Upcoming</option>
+                            <option value="LIVE">LIVE</option>
+                            <option value="Finished">Finished</option>
+                        </select>
+                    </div>
+                </div>
+
+                <label>Match Result / Note</label>
+                <input type="text" id="match-result-note" placeholder="e.g., Team A won by 4 runs" style="margin-bottom: 8px;">
+
+                <button onclick="saveMatch()" id="match-btn" style="background: #1b5e20; color: white;">Add Match</button>
+                <button onclick="resetMatchForm()" id="match-cancel-btn" style="background: #6c757d; color: white; display: none;">Cancel</button>
+                
+                <div id="matches-admin-list" style="margin-top: 15px;"></div>
+            </div>
+
             <!-- Home Page Updates Control Panel -->
             <div style="margin-top: 20px; padding: 15px; border: 1px solid #003366; background: #f0f4f8; border-radius: 5px;">
                 <h3>Manage Home Page Updates</h3>
