@@ -72,3 +72,22 @@ function loadUserProfile(userId) {
       console.error("Error loading user profile:", error);
     });
 }
+function downloadIDCard() {
+  if (!activeUser) return;
+
+  const element = document.getElementById('idCard');
+  
+  // Format user name for a clean filename
+  const safeName = activeUser.name.replace(/[^a-zA-Z0-9]/g, '_');
+
+  const options = {
+    margin:       10,
+    filename:     `ID_Card_${safeName}.pdf`,
+    image:        { type: 'jpeg', quality: 0.98 },
+    html2canvas:  { scale: 2 },
+    jsPDF:        { unit: 'mm', format: 'a5', orientation: 'portrait' }
+  };
+
+  // Convert HTML element to PDF
+  html2pdf().set(options).from(element).save();
+}
