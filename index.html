@@ -305,6 +305,11 @@
       </div>
     </div>
   </main>
+   <!-- Match Center Section -->
+  <section id="match-center" style="max-width:900px;margin:30px auto;padding:20px;background:#fff;border-radius:12px;box-shadow: 0 4px 12px rgba(0,0,0,0.1);">
+    <h2 style="color: var(--stadium-dark);"><i class="fa-solid fa-cricket-bat-ball"></i> Tournament Match Center</h2>
+    <div id="matches-list">Loading matches...</div>
+  </section>
 
   <!-- Latest Updates Section -->
   <section id="latest-updates" style="max-width:900px;margin:30px auto;padding:20px;background:#fff;border-radius:12px;box-shadow: 0 4px 12px rgba(0,0,0,0.1);">
@@ -317,7 +322,7 @@
     <p>&copy; 2026 Gully Premier League (GPL 4.1). All Rights Reserved.</p>
   </footer>
 
-  <!-- Dynamic Updates Firebase Script -->
+    <!-- Dynamic Updates & Matches Firebase Script -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/12.17.1/firebase-app.js";
     import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/12.17.1/firebase-firestore.js";
@@ -333,6 +338,42 @@
 
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
+
+    async function fetchMatches() {
+      const listEl = document.getElementById('matches-list');
+      try {
+        const snap = await getDocs(collection(db, "matches"));
+        if (snap.empty) {
+          listEl.innerHTML = "<p style='color:#666;'>No scheduled matches yet.</p>";
+          return;
+        }
+        let html = "";
+        snap.forEach(doc => {
+          const m = doc.data();
+          const badgeColor = m.status === 'LIVE' ? '#dc3545' : (m.status === 'Finished' ? '#28a745' : '#0056b3');
+          html += `
+            <div style="border: 1px solid #ddd; border-radius: 8px; padding: 15px; margin-bottom: 12px; background: #fafafa;">
+              <div style="display:flex; justify-between; align-items:center; margin-bottom: 8px;">
+                <span style="font-size:0.85rem; color:#666;">${m.time || 'Schedule TBD'}</span>
+                <span style="background:${badgeColor}; color:white; padding: 2px 8px; border-radius: 12px; font-weight:bold; font-size:0.75rem;">${m.status || 'Upcoming'}</span>
+              </div>
+              <div style="display:flex; justify-content:space-between; font-weight:bold; font-size:1.1rem; color:var(--stadium-dark);">
+                <span>${m.team1}</span>
+                <span>${m.score1 || '-'}</span>
+              </div>
+              <div style="display:flex; justify-content:space-between; font-weight:bold; font-size:1.1rem; color:var(--stadium-dark); margin-top:4px;">
+                <span>${m.team2}</span>
+                <span>${m.score2 || '-'}</span>
+              </div>
+              ${m.result ? `<div style="margin-top: 8px; font-size: 0.9rem; color: var(--grass-green); font-weight: 600;">${m.result}</div>` : ''}
+            </div>
+          `;
+        });
+        listEl.innerHTML = html;
+      } catch(e) {
+        listEl.innerHTML = "<p>Failed to load match schedules.</p>";
+      }
+    }
 
     async function fetchUpdates() {
       const listEl = document.getElementById('updates-list');
@@ -356,7 +397,9 @@
       }
     }
 
+    fetchMatches();
     fetchUpdates();
   </script>
+
 </body>
 </html>
