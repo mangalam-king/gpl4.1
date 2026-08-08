@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>View Registration</title>
+    <link rel="stylesheet" href="style.css">
+<style>
+.player-card {
+    margin-top: 20px;
+    border: 2px solid #003366;
+    border-radius: 8px;
+    overflow: hidden;
+    background: #fff;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.18);
+}
+.player-card-header {
+    background: #003366;
+    color: white;
+    padding: 14px;
+    text-align: center;
+    font-size: 22px;
+    font-weight: bold;
+}
+.player-card-id {
+    background: #f0f5fa;
+    color: #003366;
+    padding: 8px 14px;
+    text-align: center;
+    font-weight: bold;
+}
+.player-card-body {
+    padding: 16px;
+}
+.player-card-row {
+    display: flex;
+    border-bottom: 1px solid #e1e1e1;
+    padding: 9px 0;
+    gap: 10px;
+}
+.player-card-row:last-child {
+    border-bottom: none;
+}
+.player-card-label {
+    width: 38%;
+    font-weight: bold;
+    color: #333;
+}
+.player-card-value {
+    width: 62%;
+    color: #111;
+    word-break: break-word;
+}
+.player-status {
+    display: inline-block;
+    padding: 4px 10px;
+    border-radius: 4px;
+    font-weight: bold;
+    text-transform: capitalize;
+}
+.player-status-approved { background:#d4edda; color:#155724; }
+.player-status-pending { background:#fff3cd; color:#856404; }
+.player-status-rejected { background:#f8d7da; color:#721c24; }
+@media (max-width: 600px) {
+    .player-card-row { display:block; }
+    .player-card-label, .player-card-value { width:100%; display:block; }
+    .player-card-value { margin-top:3px; }
+}
+</style>
+</head>
+<body>
+
+<div class="container">
+    <div class="header">View Your Registration</div>
+
+    <div class="form-box">
+        <label>GPL ID</label>
+        <input id="gplid">
+
+        <label>Full Name</label>
+        <input id="name">
+
+        <label>Father Name</label>
+        <input id="father">
+
+        <button onclick="search()">View Details</button>
+
+        <div id="result"></div>
+    </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script type="module" src="view.js"></script>
+</body>
+</html>
