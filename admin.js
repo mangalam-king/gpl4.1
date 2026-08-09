@@ -138,8 +138,9 @@ async function loadMatches() {
                 <b>${d.team1} vs ${d.team2}</b> [${d.status}]<br>
                 Time: ${d.time || 'TBD'}<br>
                 Scores: ${d.score1 || 'N/A'} - ${d.score2 || 'N/A'}<br>
-                Note: ${d.result || 'None'}<br><br>
-                <button class="btn" style="background:#0056b3; color:white;" onclick="editMatch('${docSnap.id}', '${escapeQuotes(d.team1)}', '${escapeQuotes(d.team2)}', '${escapeQuotes(d.score1)}', '${escapeQuotes(d.score2)}', '${escapeQuotes(d.time)}', '${d.status}', '${escapeQuotes(d.result)}')">Edit Match</button>
+                Note: ${d.result || 'None'}<br>
+                ${d.live ? `<b>Live:</b> ${escapeHtml(d.live.striker || '—')} ${d.live.strikerRuns != null ? '('+d.live.strikerRuns+'/'+(d.live.strikerBalls||0)+')' : ''} | ${escapeHtml(d.live.nonstriker || '—')} ${d.live.nonstrikerRuns != null ? '('+d.live.nonstrikerRuns+'/'+(d.live.nonstrikerBalls||0)+')' : ''} | Bowler: ${escapeHtml(d.live.bowler || '—')} | Over: ${escapeHtml(d.live.over || '—')}` : ''}<br><br>
+                <button class="btn" style="background:#0056b3; color:white;" onclick="editMatch('${docSnap.id}', '${escapeQuotes(d.team1)}', '${escapeQuotes(d.team2)}', '${escapeQuotes(d.score1)}', '${escapeQuotes(d.score2)}', '${escapeQuotes(d.time)}', '${d.status}', '${escapeQuotes(d.result)}', '${escapeQuotes(encodeURIComponent(JSON.stringify(d.live || {}))) }')">Edit Match</button>
                 <button class="btn btn-delete" onclick="deleteMatch('${docSnap.id}')">Delete</button>
             `;
             list.appendChild(div);
@@ -148,6 +149,26 @@ async function loadMatches() {
         console.error(e);
         list.innerHTML = "Error loading matches.";
     }
+}
+
+function escapeHtml(v) { return String(v ?? '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\"/g,'&quot;').replace(/'/g,'&#039;'); }
+
+function getLiveDetails() {
+    const live = {
+        striker: document.getElementById('live-striker').value.trim(),
+        nonstriker: document.getElementById('live-nonstriker').value.trim(),
+        bowler: document.getElementById('live-bowler').value.trim(),
+        over: document.getElementById('live-over').value.trim(),
+        strikerRuns: document.getElementById('live-striker-runs').value === '' ? null : Number(document.getElementById('live-striker-runs').value),
+        strikerBalls: document.getElementById('live-striker-balls').value === '' ? null : Number(document.getElementById('live-striker-balls').value),
+        nonstrikerRuns: document.getElementById('live-nonstriker-runs').value === '' ? null : Number(document.getElementById('live-nonstriker-runs').value),
+        nonstrikerBalls: document.getElementById('live-nonstriker-balls').value === '' ? null : Number(document.getElementById('live-nonstriker-balls').value),
+        bowlerOvers: document.getElementById('live-bowler-overs').value.trim(),
+        bowlerRuns: document.getElementById('live-bowler-runs').value === '' ? null : Number(document.getElementById('live-bowler-runs').value),
+        bowlerWickets: document.getElementById('live-bowler-wickets').value === '' ? null : Number(document.getElementById('live-bowler-wickets').value)
+    };
+    const hasAny = Object.values(live).some(v => v !== '' && v !== null);
+    return hasAny ? live : null;
 }
 
 window.saveMatch = async function () {
@@ -166,6 +187,8 @@ window.saveMatch = async function () {
     }
 
     let payload = { team1, team2, score1, score2, time, status, result, timestamp: Date.now() };
+    const live = getLiveDetails();
+    if (live) payload.live = live;
 
     if (id) {
         await updateDoc2(doc2(updateDb, "matches", id), payload);
@@ -179,7 +202,7 @@ window.saveMatch = async function () {
     loadMatches();
 };
 
-window.editMatch = function (id, team1, team2, score1, score2, time, status, result) {
+window.editMatch = function (id, team1, team2, score1, score2, time, status, result, liveJson) {
     document.getElementById("match-id").value = id;
     document.getElementById("match-team1").value = team1;
     document.getElementById("match-team2").value = team2;
@@ -188,6 +211,18 @@ window.editMatch = function (id, team1, team2, score1, score2, time, status, res
     document.getElementById("match-time").value = time;
     document.getElementById("match-status").value = status;
     document.getElementById("match-result-note").value = result;
+    let live = {}; try { live = JSON.parse(decodeURIComponent(liveJson || '')) || {}; } catch(e) {}
+    document.getElementById('live-striker').value = live.striker || '';
+    document.getElementById('live-nonstriker').value = live.nonstriker || '';
+    document.getElementById('live-bowler').value = live.bowler || '';
+    document.getElementById('live-over').value = live.over || '';
+    document.getElementById('live-striker-runs').value = live.strikerRuns ?? '';
+    document.getElementById('live-striker-balls').value = live.strikerBalls ?? '';
+    document.getElementById('live-nonstriker-runs').value = live.nonstrikerRuns ?? '';
+    document.getElementById('live-nonstriker-balls').value = live.nonstrikerBalls ?? '';
+    document.getElementById('live-bowler-overs').value = live.bowlerOvers || '';
+    document.getElementById('live-bowler-runs').value = live.bowlerRuns ?? '';
+    document.getElementById('live-bowler-wickets').value = live.bowlerWickets ?? '';
     document.getElementById("match-btn").innerText = "Update Match";
     document.getElementById("match-cancel-btn").style.display = "inline-block";
 };
@@ -201,6 +236,8 @@ window.resetMatchForm = function () {
     document.getElementById("match-time").value = "";
     document.getElementById("match-status").value = "Upcoming";
     document.getElementById("match-result-note").value = "";
+    ['live-striker','live-nonstriker','live-bowler','live-over','live-bowler-overs'].forEach(id => document.getElementById(id).value = '');
+    ['live-striker-runs','live-striker-balls','live-nonstriker-runs','live-nonstriker-balls','live-bowler-runs','live-bowler-wickets'].forEach(id => document.getElementById(id).value = '');
     document.getElementById("match-btn").innerText = "Add Match";
     document.getElementById("match-cancel-btn").style.display = "none";
 };
