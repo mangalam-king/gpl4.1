@@ -96,3 +96,29 @@ button:hover {
 .btn-delete:hover {
     background-color: #23272b;
 }
+
+
+/* GPL 4.1 logo - added without changing existing form/data styling */
+.header {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+}
+.page-logo {
+    width: 48px;
+    height: 48px;
+    object-fit: contain;
+}
+.check-brand {
+    text-align: center;
+    margin: 12px 0;
+}
+.check-brand img {
+    width: 110px;
+    height: 110px;
+    object-fit: contain;
+}
+@media (max-width: 600px) {
+    .page-logo { width: 40px; height: 40px; }
+}
