@@ -122,3 +122,15 @@ button:hover {
 @media (max-width: 600px) {
     .page-logo { width: 40px; height: 40px; }
 }
+
+/* Verified player badge - added without changing existing styling */
+.verified-badge {
+    display: inline-block;
+    margin-left: 8px;
+    padding: 3px 8px;
+    border-radius: 12px;
+    background: #28a745;
+    color: #fff;
+    font-size: 0.78rem;
+    vertical-align: middle;
+}

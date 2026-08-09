@@ -81,7 +81,7 @@ window.search = async function () {
                 result.innerHTML = `
                     <div class="player-card">
                         <div class="player-card-header">GPL 4.1 Player Card</div>
-                        <div class="player-card-id">GPL ID: ${esc(d.regId)}</div>
+                        <div class="player-card-id">GPL ID: ${esc(d.regId)} ${status === "approved" ? '<span class="verified-badge">✓ Verified Player</span>' : ''}</div>
                         <div class="player-card-body">
                             <div class="player-card-row">
                                 <div class="player-card-label">Full Name</div>

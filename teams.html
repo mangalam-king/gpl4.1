@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GPL 4.1 Teams</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .team-card { margin-top:20px; border:2px solid #003366; border-radius:8px; overflow:hidden; background:#fff; box-shadow:0 3px 10px rgba(0,0,0,.18); }
+        .team-title { background:#003366; color:#fff; padding:14px; text-align:center; font-size:22px; font-weight:bold; }
+        .team-body { padding:16px; }
+        .team-player { padding:10px 0; border-bottom:1px solid #e1e1e1; }
+        .team-player:last-child { border-bottom:none; }
+        .verified-mini { display:inline-block; margin-left:6px; padding:2px 6px; border-radius:10px; background:#28a745; color:#fff; font-size:11px; font-weight:bold; }
+        .empty-team { color:#666; }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="header"><img class="page-logo" src="gpl-logo.png" alt="GPL 4.1 - Gully Premiere League"> GPL 4.1 Teams</div>
+    <div class="form-box">
+        <div id="teams-list">Loading teams...</div>
+    </div>
+</div>
+<script type="module">
+import { db } from './firebase.js';
+import { collection, getDocs } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+const esc = v => String(v ?? '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#039;');
+const teams = ['Team A','Team B','Team C','Team D'];
+async function loadTeams(){
+  const el=document.getElementById('teams-list');
+  try{
+    const snap=await getDocs(collection(db,'registrations'));
+    const grouped={}; teams.forEach(t=>grouped[t]=[]);
+    snap.forEach(ds=>{const d=ds.data(); if(d.team && grouped[d.team] && String(d.status).toLowerCase()==='approved') grouped[d.team].push(d);});
+    el.innerHTML=teams.map(team=>`<div class="team-card"><div class="team-title">${esc(team)}</div><div class="team-body">${grouped[team].length ? grouped[team].map((p,i)=>`<div class="team-player"><b>${i+1}. ${esc(p.name)}</b> <span class="verified-mini">✓ Verified</span><br>GPL ID: ${esc(p.regId)}<br>Work: ${esc(p.work || 'Player')}</div>`).join('') : '<div class="empty-team">No approved players assigned yet.</div>'}</div></div>`).join('');
+  }catch(e){console.error(e);el.innerHTML='Error loading teams.';}
+}
+loadTeams();
+</script>
+</body>
+</html>
