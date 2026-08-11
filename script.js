@@ -75,6 +75,39 @@ let regId = "GPL" + String(newId).padStart(3, '0');
             status: "pending"
         });
 
+        // Send a notification email through Formspree without leaving the website.
+        // The Formspree form can be configured to deliver this notification to your email.
+        const formspreeData = new FormData();
+        formspreeData.append("subject", `New GPL 4.1 Registration - ${regId}`);
+        formspreeData.append("Registration ID", regId);
+        formspreeData.append("Full Name", name);
+        formspreeData.append("Father Name", father);
+        formspreeData.append("Date of Birth", dob);
+        formspreeData.append("Age", document.getElementById("age").value);
+        formspreeData.append("Work", document.getElementById("work").value);
+        formspreeData.append("Email", document.getElementById("email").value);
+        formspreeData.append("Mobile Number", mobile);
+        formspreeData.append("Address Line 1", document.getElementById("addr1").value);
+        formspreeData.append("Address Line 2", document.getElementById("addr2").value);
+        formspreeData.append("Address Line 3", document.getElementById("addr3").value);
+        formspreeData.append("City", document.getElementById("city").value);
+
+        try {
+            const mailResponse = await fetch("https://formspree.io/f/moeadvvn", {
+                method: "POST",
+                body: formspreeData,
+                headers: {
+                    "Accept": "application/json"
+                }
+            });
+
+            if (!mailResponse.ok) {
+                console.warn("Registration was saved, but the Formspree email notification failed.");
+            }
+        } catch (mailErr) {
+            console.warn("Registration was saved, but the Formspree email notification could not be sent.", mailErr);
+        }
+
         alert("✅ Registered! Your ID: " + regId);
         document.getElementById("form").reset();
 
