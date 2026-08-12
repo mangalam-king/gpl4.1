@@ -105,10 +105,38 @@
 
             <hr style="margin: 20px 0;">
             <h3>Registered Players</h3>
+            <button onclick="downloadRegistrationsPDF()" style="background:#8e24aa; color:white; margin-bottom:10px;">Download Registrations PDF</button>
             <div id="list"></div>
+
+            <!-- Edit Registration Modal -->
+            <div id="edit-registration-modal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,.55); z-index:9999; padding:20px; overflow:auto;">
+                <div style="max-width:650px; margin:30px auto; background:#fff; border-radius:8px; padding:18px; box-shadow:0 8px 30px rgba(0,0,0,.25);">
+                    <h3 style="margin-top:0;">Edit Registration</h3>
+                    <input type="hidden" id="edit-registration-id">
+                    <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
+                        <div><label>GPL ID</label><input id="edit-regId" type="text" readonly></div>
+                        <div><label>Name</label><input id="edit-name" type="text"></div>
+                        <div><label>Father Name</label><input id="edit-father" type="text"></div>
+                        <div><label>Date of Birth</label><input id="edit-dob" type="date"></div>
+                        <div><label>Age</label><input id="edit-age" type="text"></div>
+                        <div><label>Mobile</label><input id="edit-mobile" type="text"></div>
+                        <div><label>Email</label><input id="edit-email" type="email"></div>
+                        <div><label>Work</label><input id="edit-work" type="text"></div>
+                        <div><label>City</label><input id="edit-city" type="text"></div>
+                        <div style="grid-column:1/-1;"><label>Address Line 1</label><input id="edit-address1" type="text"></div>
+                        <div style="grid-column:1/-1;"><label>Address Line 2</label><input id="edit-address2" type="text"></div>
+                        <div style="grid-column:1/-1;"><label>Address Line 3</label><input id="edit-address3" type="text"></div>
+                    </div>
+                    <div style="margin-top:14px; display:flex; gap:8px; flex-wrap:wrap;">
+                        <button class="btn btn-approve" onclick="saveRegistrationEdit()">Save Changes</button>
+                        <button class="btn" style="background:#6c757d; color:white;" onclick="closeRegistrationEdit()">Cancel</button>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 </div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script type="module" src="admin.js"></script>
 </body>
 </html>

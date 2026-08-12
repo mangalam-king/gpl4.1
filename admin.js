@@ -67,6 +67,7 @@ async function loadData() {
 
                 <button class="btn btn-approve" onclick="approve('${docSnap.id}')">Approve</button>
                 <button class="btn btn-reject" onclick="reject('${docSnap.id}')">Reject</button>
+                <button class="btn" style="background:#f0ad4e; color:white;" onclick="editRegistration('${docSnap.id}')">Edit</button>
                 <button class="btn btn-delete" onclick="deleteData('${docSnap.id}')">Delete</button>
             `;
             list.appendChild(div);
@@ -81,6 +82,178 @@ async function loadData() {
         list.innerHTML = "Error loading registrations.";
     }
 }
+
+
+
+// Download all registrations as a PDF. This reads the same Firebase data
+// already used by the admin panel and does not modify any registration.
+window.downloadRegistrationsPDF = async function () {
+    try {
+        const { jsPDF } = window.jspdf || {};
+        if (!jsPDF) {
+            alert("PDF library could not be loaded. Please check your internet connection.");
+            return;
+        }
+
+        const snap = await getDocs(collection(db, "registrations"));
+        if (snap.empty) {
+            alert("No registrations found.");
+            return;
+        }
+
+        const pdf = new jsPDF({ orientation: "portrait", unit: "mm", format: "a4" });
+        const margin = 14;
+        const pageWidth = 210;
+        const pageHeight = 297;
+        let y = 18;
+
+        const safe = (value) => value === undefined || value === null || value === "" ? "-" : String(value);
+        const addHeader = () => {
+            pdf.setFontSize(18);
+            pdf.setFont(undefined, "bold");
+            pdf.text("GPL 4.1 - GULLY PREMIERE LEAGUE", margin, y);
+            y += 8;
+            pdf.setFontSize(11);
+            pdf.setFont(undefined, "normal");
+            pdf.text("Registration Report", margin, y);
+            y += 8;
+            pdf.line(margin, y, pageWidth - margin, y);
+            y += 8;
+        };
+
+        addHeader();
+
+        let number = 0;
+        snap.forEach((docSnap) => {
+            const d = docSnap.data();
+            number++;
+
+            // Keep each player together; start a fresh page when needed.
+            if (y > pageHeight - 75) {
+                pdf.addPage();
+                y = 18;
+                addHeader();
+            }
+
+            pdf.setFontSize(12);
+            pdf.setFont(undefined, "bold");
+            pdf.text(`${number}. ${safe(d.name)}`, margin, y);
+            y += 7;
+            pdf.setFontSize(9.5);
+            pdf.setFont(undefined, "normal");
+
+            const fields = [
+                ["GPL ID", d.regId],
+                ["Father", d.father],
+                ["Mobile", d.mobile],
+                ["Work", d.work],
+                ["Status", d.status],
+                ["Team", d.team || "Unassigned"],
+                ["Email", d.email],
+                ["Age", d.age],
+                ["Class", d.class],
+                ["School", d.school],
+                ["Address", d.address],
+                ["City", d.city],
+                ["District", d.district],
+                ["State", d.state],
+                ["Pincode", d.pincode]
+            ];
+
+            for (const [label, value] of fields) {
+                if (value === undefined || value === null || value === "") continue;
+                const text = `${label}: ${safe(value)}`;
+                const lines = pdf.splitTextToSize(text, pageWidth - margin * 2);
+                pdf.text(lines, margin, y);
+                y += 5 * lines.length;
+            }
+
+            y += 4;
+            pdf.setDrawColor(190, 190, 190);
+            pdf.line(margin, y, pageWidth - margin, y);
+            y += 7;
+        });
+
+        pdf.save(`GPL-4.1-Registrations-${new Date().toISOString().slice(0,10)}.pdf`);
+    } catch (err) {
+        console.error(err);
+        alert("Could not create PDF: " + err.message);
+    }
+};
+
+window.editRegistration = async function (id) {
+    try {
+        const snap = await getDocs(collection(db, "registrations"));
+        let found = null;
+        snap.forEach(d => { if (d.id === id) found = { id: d.id, ...d.data() }; });
+        if (!found) { alert("Registration not found."); return; }
+
+        document.getElementById("edit-registration-id").value = found.id;
+        document.getElementById("edit-regId").value = found.regId || "";
+        document.getElementById("edit-name").value = found.name || "";
+        document.getElementById("edit-father").value = found.father || "";
+        document.getElementById("edit-dob").value = found.dob || "";
+        document.getElementById("edit-age").value = found.age || "";
+        document.getElementById("edit-mobile").value = found.mobile || "";
+        document.getElementById("edit-email").value = found.email || "";
+        document.getElementById("edit-work").value = found.work || "";
+        document.getElementById("edit-city").value = found.city || "";
+        document.getElementById("edit-address1").value = found.address1 || "";
+        document.getElementById("edit-address2").value = found.address2 || "";
+        document.getElementById("edit-address3").value = found.address3 || "";
+        document.getElementById("edit-registration-modal").style.display = "block";
+    } catch (err) {
+        console.error(err);
+        alert("Could not load registration: " + err.message);
+    }
+};
+
+window.closeRegistrationEdit = function () {
+    document.getElementById("edit-registration-modal").style.display = "none";
+};
+
+window.saveRegistrationEdit = async function () {
+    const id = document.getElementById("edit-registration-id").value;
+    if (!id) return;
+
+    const mobile = document.getElementById("edit-mobile").value.trim();
+    if (!mobile) { alert("Mobile number is required."); return; }
+
+    try {
+        // Prevent changing to a mobile number already used by another player.
+        const snap = await getDocs(collection(db, "registrations"));
+        let duplicate = false;
+        snap.forEach(d => {
+            if (d.id !== id && String(d.data().mobile || "") === mobile) duplicate = true;
+        });
+        if (duplicate) {
+            alert("Another registration already uses this mobile number.");
+            return;
+        }
+
+        const data = {
+            name: document.getElementById("edit-name").value.trim().toLowerCase(),
+            father: document.getElementById("edit-father").value.trim().toLowerCase(),
+            dob: document.getElementById("edit-dob").value,
+            age: document.getElementById("edit-age").value.trim(),
+            email: document.getElementById("edit-email").value.trim(),
+            mobile,
+            address1: document.getElementById("edit-address1").value.trim(),
+            address2: document.getElementById("edit-address2").value.trim(),
+            address3: document.getElementById("edit-address3").value.trim(),
+            city: document.getElementById("edit-city").value.trim(),
+            work: document.getElementById("edit-work").value.trim()
+        };
+
+        await updateDoc(doc(db, "registrations", id), data);
+        alert("Registration updated successfully.");
+        closeRegistrationEdit();
+        await loadData();
+    } catch (err) {
+        console.error(err);
+        alert("Failed to update registration: " + err.message);
+    }
+};
 
 window.approve = async function (id) {
     await updateDoc(doc(db, "registrations", id), { status: "approved" });
